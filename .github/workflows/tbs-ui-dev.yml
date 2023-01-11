@@ -1,0 +1,45 @@
+name: NewTBS/TBS-UI-Dev
+on:
+  push:
+    branches:
+    - Development
+    - prod/TBS-prod
+env:
+  MajorVersion: '0'
+  MinorVersion: '1'
+  PrototypeAPIUrl: http://placeholder
+  system_debug: 'false'
+jobs:
+  Phase_1:
+    name: Build and Test Web Client 
+    runs-on: windows-latest
+    steps:
+    - name: checkout
+      uses: actions/checkout@v3.3.0
+    - name: Use Node 12.x
+      uses: actions/setup-node@v3.6.0
+      with:
+        node-version: 12.x
+#     # This item has no matching transformer
+#     - environment: {}
+#       enabled: false
+#       continueOnError: false
+#       alwaysRun: false
+#       displayName: 'npm Authenticate '
+#       retryCountOnTaskFailure: 0
+#       task: ad884ca2-732e-4b85-b2d3-ed71bcbd2788@0
+#       inputs:
+#         workingFile: "${{ github.workspace }}/.npmrc"
+#         customEndpoint:
+#       task_type: task
+    - name: npm install
+      run: npm install
+      working-directory: TimeSystemClientModule/src
+    - name: npm build
+      run: npm run build --prod
+      working-directory: TimeSystemClientModule/src
+    - name: 'Publish Artifact: dist'
+      uses: actions/upload-artifact@v3.1.1
+      with:
+        name: drop
+        path: TimeSystemClientModule\dist
