@@ -1,0 +1,52 @@
+name: NewTBS/TBS-UI-CD
+on:
+#   # The 'artifactSource' resource was not converted because GitHub does not support this type of trigger
+jobs:
+  Dev:
+    runs-on: windows-2019
+    concurrency:
+      group: "${{ github.ref }}"
+      cancel-in-progress: false
+    if: # artifact triggers are not supported
+        github.event_type != 'pull_request'
+    steps:
+    - name: Azure CLI
+      if: 'false'
+      uses: azure/login@v1.4.6
+      with:
+        creds: "${{ secrets.AZURE_CREDENTIALS }}"
+    - name: Azure CLI
+      if: 'false'
+      run: call az storage blob delete-batch -s "$web" --account-name "imtbsdev"
+      shell: cmd
+#     # 'AzureFileCopy' was not transformed because only Azure blob storage is supported as a destination
+    - name: 'Azure App Service Deploy: imtbs-dev'
+      uses: Azure/webapps-deploy@v2
+      with:
+        app-name: imtbs-dev
+        package: "${{ github.workspace }}/TBS-UI/drop"
+  PROD:
+    runs-on: windows-2019
+    environment:
+      name: PROD
+    concurrency:
+      group: "${{ github.ref }}"
+      cancel-in-progress: false
+    if: # artifact triggers are not supported
+        github.event_type != 'pull_request'
+    steps:
+    - name: Azure CLI
+      if: 'false'
+      uses: azure/login@v1.4.6
+      with:
+        creds: "${{ secrets.AZURE_CREDENTIALS }}"
+    - name: Azure CLI
+      if: 'false'
+      run: call az storage blob delete-batch -s "$web" --account-name "imtbsdev"
+      shell: cmd
+#     # 'AzureFileCopy' was not transformed because only Azure blob storage is supported as a destination
+    - name: 'Azure App Service Deploy: imtbs-Prod'
+      uses: Azure/webapps-deploy@v2
+      with:
+        app-name: imtbs
+        package: "${{ github.workspace }}/TBS-UI/drop"
