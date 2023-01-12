@@ -1,0 +1,35 @@
+name: 2
+on:
+  workflow_dispatch:
+jobs:
+  build:
+    runs-on:
+      - ubuntu-latest
+    steps:
+    - name: checkout
+      uses: actions/checkout@v3.3.0
+    - name: run command
+      shell: bash
+      run: |-
+        npm install
+        ls
+#     # This item has no matching transformer
+#     - uses: hudson.plugins.s3.S3CopyArtifact
+#       with:
+#         plugin: s3@0.12.3436.v674b_46258039
+#         projectName: '2'
+#         filter:
+#         excludeFilter:
+#         target:
+#         selector:
+#           class: hudson.plugins.copyartifact.StatusBuildSelector
+#           plugin: copyartifact@1.48
+    - name: Configure AWS Credentials
+      uses: aws-actions/configure-aws-credentials@v1.7
+      with:
+        aws-access-key-id: "${{ secrets.AWS_ACCESS_KEY_ID }}"
+        aws-secret-access-key: "${{ secrets.AWS_SECRET_ACCESS_KEY }}"
+        aws-region: us-east-1
+    - name: upload_artifacts_to_s3_bucket
+      run: aws s3 cp dist/* s3://gitpoc --storage-class STANDARD --recursive
+      if: always()
